@@ -2,6 +2,7 @@
 This module contains the final mixin implementation, for whatever version
 of Django is present.
 """
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import ForeignKey, ManyToManyField
 
 try:
@@ -43,8 +44,12 @@ class GroupByMixin(GroupByMixinBase):
                     related[fk_field_name].append(related_field)
 
             else:
-                # Simple field, get the field instance
-                model_field = model._meta.get_field(field_name)
+                try:
+                    # Simple field, get the field instance
+                    model_field = model._meta.get_field(field_name)
+                except FieldDoesNotExist:
+                    # Calculated field, there's no field instance
+                    model_field = None
 
                 if isinstance(model_field, (ForeignKey, ManyToManyField)):
                     # It's a related field, get model
