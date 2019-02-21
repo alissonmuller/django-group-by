@@ -8,6 +8,7 @@ class AggregatedGroup(object):
     """
     def __init__(self, model, row_values):
         self._model = model
+        self._meta = getattr(model, '_meta', None)
         self._row_values = row_values
         self._set_values()
 
